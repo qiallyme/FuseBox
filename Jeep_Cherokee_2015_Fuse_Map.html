@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=yes">
+<meta name="theme-color" content="#10151c">
+<title>2015 Jeep Cherokee Fuse Map</title>
+<style>
+:root {
+  --bg:#0b0f14; --panel:#131a22; --text:#f3f7fb; --muted:#aab6c4; --line:#566273;
+  --accent:#69c0ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{display:flex;flex-direction:column;overflow:hidden}
+header{padding:10px 12px;background:#10161e;border-bottom:1px solid #26303b;z-index:5}
+h1{font-size:16px;margin:0 0 8px}
+.controls{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+input,button,select{font:inherit;border-radius:10px;border:1px solid #354150;background:#18212b;color:var(--text);padding:10px}
+button{font-weight:700}
+#viewport{position:relative;flex:1;overflow:hidden;touch-action:none;background:
+radial-gradient(circle at 50% 40%,#18202a 0,#0c1117 70%)}
+#stage{position:absolute;left:50%;top:50%;transform-origin:0 0}
+svg{width:650px;height:950px;display:block;filter:drop-shadow(0 10px 30px #000)}
+.fuse rect,.relay rect,.breaker rect{stroke-width:2;vector-effect:non-scaling-stroke}
+.fuse text,.relay text,.breaker text{fill:white;font-weight:800;font-size:11px;text-anchor:middle;pointer-events:none}
+.fuse{cursor:pointer}
+.fuse.highlight rect{stroke:#fff;stroke-width:5}
+.fuse.dim{opacity:.12}
+.relay rect{fill:#323943;stroke:#8f9aaa}
+.breaker rect{fill:#5a3d62;stroke:#cc9ce0}
+#legend{position:absolute;left:10px;bottom:10px;background:#111923e8;border:1px solid #334050;border-radius:12px;padding:8px;max-width:210px;font-size:11px;display:none}
+#legend.open{display:block}
+.legend-row{display:flex;gap:7px;align-items:center;margin:4px 0}
+.swatch{width:13px;height:13px;border-radius:3px;flex:none}
+#details{position:fixed;left:0;right:0;bottom:0;background:#111923f5;border-top:1px solid #3a4654;padding:14px 16px 18px;transform:translateY(105%);transition:.2s;z-index:10;max-height:46vh;overflow:auto}
+#details.open{transform:none}
+#details h2{margin:0 0 4px;font-size:22px}
+#details .meta{color:var(--muted);font-size:13px;margin-bottom:10px}
+#details .function{font-size:17px;line-height:1.35}
+.badge{display:inline-block;border-radius:999px;padding:4px 8px;margin:8px 6px 0 0;background:#26313e;font-size:12px}
+.warn{background:#5b311f}
+.close{float:right;padding:7px 10px}
+.note{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.35}
+#tip{position:absolute;right:10px;bottom:10px;padding:8px 10px;background:#111923d9;border-radius:10px;font-size:11px;color:var(--muted)}
+@media (min-width:800px){header{padding:12px 20px} h1{font-size:19px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>2015 Jeep Cherokee — Under-Hood Fuse Map</h1>
+  <div class="controls">
+    <input id="search" placeholder="Search F79, radio, cluster…">
+    <button id="reset">Reset</button>
+    <button id="legendBtn">Colors</button>
+  </div>
+</header>
+<div id="viewport">
+  <div id="stage">
+    <svg id="map" viewBox="0 0 650 950" role="img" aria-label="Interactive fuse box layout">
+      <rect x="8" y="8" width="634" height="934" rx="24" fill="#171d25" stroke="#677180" stroke-width="4"/>
+      <text x="325" y="28" fill="#dce6f0" text-anchor="middle" font-size="15" font-weight="800">FRONT / BATTERY SIDE</text>
+      <g id="fuses"></g>
+      <g id="relays"></g>
+      <g id="breakers"></g>
+    </svg>
+  </div>
+  <div id="legend"></div>
+  <div id="tip">Pinch or scroll to zoom · Drag to move · Tap a fuse</div>
+</div>
+<section id="details">
+  <button class="close" id="close">Close</button>
+  <h2 id="detailId"></h2>
+  <div class="meta" id="detailMeta"></div>
+  <div class="function" id="detailFunction"></div>
+  <div id="detailBadges"></div>
+  <div class="note">Diagram is transcribed from the fuse-box cover shown in your photos. Equipment varies by engine and options. Turn the vehicle fully off before removing a fuse; never replace one with a higher amperage.</div>
+</section>
+<script>
+const fuses=[{"id": "F1", "amps": "70A", "function": "Electric power steering", "category": "steering", "x": 44, "y": 40, "w": 58, "h": 52, "critical": true}, {"id": "F2", "amps": "150A", "function": "Fuel heater (diesel)", "category": "engine", "x": 118, "y": 40, "w": 58, "h": 52, "critical": true}, {"id": "F3", "amps": "225A", "function": "Alternator", "category": "engine", "x": 192, "y": 40, "w": 58, "h": 52, "critical": true}, {"id": "F4", "amps": "", "function": "Battery main feed", "category": "power", "x": 266, "y": 40, "w": 58, "h": 52, "critical": true}, {"id": "F5", "amps": "100A", "function": "Radiator fan", "category": "cooling", "x": 340, "y": 40, "w": 58, "h": 52, "critical": true}, {"id": "F6", "amps": "", "function": "Not populated", "category": "empty", "x": 360, "y": 112, "w": 25, "h": 20, "critical": false}, {"id": "F7", "amps": "15A", "function": "PCM (diesel)", "category": "engine", "x": 70, "y": 130, "w": 25, "h": 20, "critical": true}, {"id": "F8", "amps": "25A", "function": "Fuel injection / ECM / PCM", "category": "engine", "x": 145, "y": 130, "w": 25, "h": 20, "critical": true}, {"id": "F9", "amps": "", "function": "Not populated", "category": "empty", "x": 360, "y": 142, "w": 25, "h": 20, "critical": false}, {"id": "F10", "amps": "20A", "function": "PTU 4WD", "category": "drivetrain", "x": 70, "y": 165, "w": 25, "h": 20, "critical": true}, {"id": "F11", "amps": "", "function": "Not populated", "category": "empty", "x": 145, "y": 165, "w": 25, "h": 20, "critical": false}, {"id": "F12", "amps": "20A", "function": "Brake vacuum pump", "category": "brakes", "x": 360, "y": 175, "w": 25, "h": 20, "critical": true}, {"id": "F13", "amps": "10A", "function": "ECM / USM / PCM", "category": "engine", "x": 395, "y": 175, "w": 25, "h": 20, "critical": true}, {"id": "F14", "amps": "10A", "function": "PTU / DTCM / EPB / BSM / RDM / brake pedal / backup switch", "category": "drivetrain", "x": 70, "y": 200, "w": 25, "h": 20, "critical": true}, {"id": "F15", "amps": "", "function": "Not populated", "category": "empty", "x": 70, "y": 230, "w": 25, "h": 20, "critical": false}, {"id": "F16", "amps": "20A", "function": "Ignition coil / diesel systems", "category": "engine", "x": 145, "y": 200, "w": 25, "h": 20, "critical": true}, {"id": "F17", "amps": "", "function": "Not populated", "category": "empty", "x": 360, "y": 210, "w": 25, "h": 20, "critical": false}, {"id": "F18", "amps": "", "function": "Not populated", "category": "empty", "x": 70, "y": 260, "w": 25, "h": 20, "critical": false}, {"id": "F19", "amps": "40A", "function": "Starter", "category": "starting", "x": 360, "y": 240, "w": 25, "h": 20, "critical": true}, {"id": "F20", "amps": "10A", "function": "A/C clutch", "category": "hvac", "x": 395, "y": 240, "w": 25, "h": 20, "critical": false}, {"id": "F21", "amps": "", "function": "Not populated", "category": "empty", "x": 70, "y": 290, "w": 25, "h": 20, "critical": false}, {"id": "F22", "amps": "5A", "function": "Radiator fan enable", "category": "cooling", "x": 145, "y": 260, "w": 25, "h": 20, "critical": true}, {"id": "F23", "amps": "70A/50A", "function": "BCM feed 2 / USM feed 2", "category": "body", "x": 210, "y": 275, "w": 70, "h": 40, "critical": true}, {"id": "F24", "amps": "20A", "function": "Rear wiper", "category": "body", "x": 395, "y": 275, "w": 25, "h": 20, "critical": false}, {"id": "F25B", "amps": "20A", "function": "Front washer", "category": "body", "x": 95, "y": 315, "w": 32, "h": 20, "critical": false}, {"id": "F26", "amps": "30A", "function": "Fuel heater (diesel)", "category": "engine", "x": 95, "y": 345, "w": 32, "h": 20, "critical": true}, {"id": "F27", "amps": "", "function": "Not populated", "category": "empty", "x": 45, "y": 390, "w": 30, "h": 22, "critical": false}, {"id": "F28", "amps": "15A", "function": "TCM", "category": "drivetrain", "x": 120, "y": 380, "w": 30, "h": 22, "critical": true}, {"id": "F29", "amps": "", "function": "Not populated", "category": "empty", "x": 285, "y": 360, "w": 54, "h": 42, "critical": false}, {"id": "F30", "amps": "10A", "function": "ECM / EPS / PCM / fuel-pump relay feed", "category": "engine", "x": 360, "y": 345, "w": 30, "h": 22, "critical": true}, {"id": "F31", "amps": "", "function": "Not populated", "category": "empty", "x": 360, "y": 380, "w": 30, "h": 22, "critical": false}, {"id": "F32", "amps": "", "function": "Not populated", "category": "empty", "x": 45, "y": 425, "w": 30, "h": 22, "critical": false}, {"id": "F33", "amps": "", "function": "Not populated", "category": "empty", "x": 45, "y": 455, "w": 30, "h": 22, "critical": false}, {"id": "F34", "amps": "", "function": "Not populated", "category": "empty", "x": 45, "y": 485, "w": 30, "h": 22, "critical": false}, {"id": "F35", "amps": "", "function": "Not populated", "category": "empty", "x": 45, "y": 515, "w": 30, "h": 22, "critical": false}, {"id": "F36", "amps": "", "function": "Not populated", "category": "empty", "x": 235, "y": 420, "w": 25, "h": 20, "critical": false}, {"id": "F37", "amps": "", "function": "Not populated", "category": "empty", "x": 90, "y": 560, "w": 50, "h": 35, "critical": false}, {"id": "F38", "amps": "60A", "function": "Glow plug (diesel)", "category": "engine", "x": 155, "y": 560, "w": 50, "h": 35, "critical": true}, {"id": "F39", "amps": "40A", "function": "HVAC blower motor", "category": "hvac", "x": 220, "y": 535, "w": 28, "h": 58, "critical": false}, {"id": "F40", "amps": "20A/30A", "function": "Trailer-tow park lights / headlamp washer", "category": "lighting", "x": 270, "y": 535, "w": 40, "h": 28, "critical": false}, {"id": "F41", "amps": "60A/50A", "function": "BCM feed 1 / USM feed 1", "category": "body", "x": 330, "y": 520, "w": 45, "h": 55, "critical": true}, {"id": "F42", "amps": "30A", "function": "Trailer-tow module", "category": "body", "x": 395, "y": 500, "w": 38, "h": 28, "critical": false}, {"id": "F43", "amps": "20A", "function": "Fuel pump motor", "category": "engine", "x": 440, "y": 535, "w": 22, "h": 50, "critical": true}, {"id": "F44", "amps": "30A", "function": "Trailer-tow receptacle", "category": "power", "x": 90, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F45", "amps": "30A", "function": "Passenger door module", "category": "body", "x": 125, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F46", "amps": "25A", "function": "Sunroof", "category": "body", "x": 160, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F47", "amps": "", "function": "Not populated", "category": "empty", "x": 195, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F48", "amps": "30A", "function": "Driver door module", "category": "body", "x": 230, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F49", "amps": "30A", "function": "Power inverter AC", "category": "power", "x": 265, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F50", "amps": "30A", "function": "Power liftgate", "category": "body", "x": 300, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F51", "amps": "", "function": "Not populated", "category": "empty", "x": 335, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F52", "amps": "30A", "function": "Front wiper", "category": "body", "x": 370, "y": 620, "w": 28, "h": 50, "critical": false}, {"id": "F53", "amps": "30A", "function": "BSM ECU and valves", "category": "safety", "x": 405, "y": 620, "w": 28, "h": 50, "critical": true}, {"id": "F54", "amps": "30A", "function": "BCM feed 3", "category": "body", "x": 440, "y": 620, "w": 28, "h": 50, "critical": true}, {"id": "F55", "amps": "10A", "function": "Rear camera / blind-spot", "category": "safety", "x": 468, "y": 620, "w": 26, "h": 48, "critical": false}, {"id": "F56", "amps": "15A", "function": "Ignition module / RF hub / KIN / ESCL", "category": "body", "x": 500, "y": 620, "w": 26, "h": 48, "critical": true}, {"id": "F57", "amps": "20A", "function": "Trailer-tow left stop/turn", "category": "lighting", "x": 532, "y": 620, "w": 26, "h": 48, "critical": false}, {"id": "F58", "amps": "10A", "function": "OCM / USM / ESCL / trailer-tow", "category": "body", "x": 565, "y": 620, "w": 26, "h": 48, "critical": true}, {"id": "F59", "amps": "30A", "function": "DTCM", "category": "drivetrain", "x": 70, "y": 690, "w": 25, "h": 20, "critical": true}, {"id": "F60", "amps": "20A", "function": "Console power outlet", "category": "power", "x": 105, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F61", "amps": "20A", "function": "Trailer-tow right stop/turn", "category": "lighting", "x": 140, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F62", "amps": "20A", "function": "Windshield de-icer", "category": "hvac", "x": 175, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F63", "amps": "20A", "function": "Front heated / ventilated seats", "category": "comfort", "x": 210, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F64", "amps": "20A", "function": "Heated steering wheel", "category": "comfort", "x": 245, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F65", "amps": "10A", "function": "PAM / DASM / in-car temp-humidity / blindspot", "category": "safety", "x": 280, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F66", "amps": "15A", "function": "HVAC / cluster", "category": "hvac", "x": 315, "y": 690, "w": 25, "h": 20, "critical": true}, {"id": "F67", "amps": "10A", "function": "PAM / DASM / in-car temp-humidity", "category": "safety", "x": 350, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F68", "amps": "", "function": "Not populated", "category": "empty", "x": 385, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F69", "amps": "10A", "function": "Transfer-case switch / active grille shutter", "category": "drivetrain", "x": 420, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F69A", "amps": "10A", "function": "Transfer-case switch (diesel)", "category": "drivetrain", "x": 455, "y": 690, "w": 25, "h": 20, "critical": false}, {"id": "F70", "amps": "5A", "function": "Battery sensor", "category": "power", "x": 70, "y": 725, "w": 25, "h": 20, "critical": true}, {"id": "F71", "amps": "20A", "function": "HID headlamp right", "category": "lighting", "x": 105, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F72", "amps": "10A", "function": "Heated mirrors", "category": "comfort", "x": 140, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F73", "amps": "20A", "function": "Trailer-tow backup", "category": "lighting", "x": 175, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F74", "amps": "30A", "function": "Rear defogger", "category": "hvac", "x": 210, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F75", "amps": "20A", "function": "Cigar lighter", "category": "power", "x": 245, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F76", "amps": "20A", "function": "Rear dome / interior lighting", "category": "lighting", "x": 280, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F77", "amps": "10A", "function": "Fuel-door release / brake-pedal switch", "category": "body", "x": 315, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F78", "amps": "10A", "function": "Diagnostic port", "category": "diagnostic", "x": 350, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F79", "amps": "10A", "function": "ICS / HVAC / EPB switch / CDM / SCCM / cluster", "category": "body", "x": 385, "y": 725, "w": 25, "h": 20, "critical": true}, {"id": "F80", "amps": "20A", "function": "Radio", "category": "audio", "x": 420, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F81", "amps": "", "function": "Not populated", "category": "empty", "x": 455, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F82", "amps": "", "function": "Not populated", "category": "empty", "x": 490, "y": 725, "w": 25, "h": 20, "critical": false}, {"id": "F83", "amps": "20A", "function": "ECM (gas)", "category": "engine", "x": 525, "y": 725, "w": 25, "h": 20, "critical": true}, {"id": "F84", "amps": "30A", "function": "EPB left", "category": "brakes", "x": 560, "y": 725, "w": 25, "h": 20, "critical": true}, {"id": "F85", "amps": "", "function": "Not populated", "category": "empty", "x": 70, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F86", "amps": "20A", "function": "Horn", "category": "safety", "x": 105, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F87A", "amps": "20A", "function": "HID headlamp left", "category": "lighting", "x": 140, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F88", "amps": "15A", "function": "Smart camera / SBR", "category": "safety", "x": 175, "y": 760, "w": 25, "h": 20, "critical": true}, {"id": "F89", "amps": "10A", "function": "Automatic headlamp leveling", "category": "lighting", "x": 210, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F90", "amps": "", "function": "Not populated", "category": "empty", "x": 245, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F91", "amps": "20A", "function": "D-pillar power outlet", "category": "power", "x": 280, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F92", "amps": "", "function": "Not populated", "category": "empty", "x": 315, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F93", "amps": "40A", "function": "BSM motor pump", "category": "brakes", "x": 350, "y": 760, "w": 25, "h": 20, "critical": true}, {"id": "F94", "amps": "30A", "function": "EPB right", "category": "brakes", "x": 385, "y": 760, "w": 25, "h": 20, "critical": true}, {"id": "F95", "amps": "10A", "function": "Sunroof / rain sensor / ECM / passenger-window switch / console outlet illumination", "category": "body", "x": 420, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F96", "amps": "10A", "function": "Airbag", "category": "safety", "x": 455, "y": 760, "w": 25, "h": 20, "critical": true}, {"id": "F97", "amps": "10A", "function": "Airbag", "category": "safety", "x": 490, "y": 760, "w": 25, "h": 20, "critical": true}, {"id": "F98", "amps": "25A", "function": "Amplifier", "category": "audio", "x": 525, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F99", "amps": "", "function": "Not populated", "category": "empty", "x": 560, "y": 760, "w": 25, "h": 20, "critical": false}, {"id": "F100", "amps": "", "function": "Not populated", "category": "empty", "x": 560, "y": 795, "w": 25, "h": 20, "critical": false}];
+const relays=[{"id": "K1", "function": "Starter solenoid", "x": 370, "y": 118, "w": 70, "h": 54}, {"id": "K2", "function": "ASD", "x": 22, "y": 145, "w": 58, "h": 90}, {"id": "K3", "function": "Starter", "x": 370, "y": 205, "w": 70, "h": 54}, {"id": "K4", "function": "Fuel heater (diesel)", "x": 190, "y": 330, "w": 70, "h": 54}, {"id": "K5", "function": "Not populated", "x": 45, "y": 405, "w": 90, "h": 105}, {"id": "K6", "function": "Not populated", "x": 300, "y": 405, "w": 90, "h": 105}, {"id": "K7", "function": "Not populated", "x": 410, "y": 405, "w": 90, "h": 105}, {"id": "K8", "function": "Blower motor", "x": 220, "y": 455, "w": 50, "h": 80}, {"id": "K9", "function": "Run/Start", "x": 500, "y": 475, "w": 55, "h": 95}, {"id": "K10", "function": "Rear defog", "x": 285, "y": 665, "w": 65, "h": 70}, {"id": "K11", "function": "Run #1", "x": 370, "y": 665, "w": 65, "h": 70}, {"id": "K12", "function": "Run/Accessory", "x": 210, "y": 825, "w": 80, "h": 70}, {"id": "K13", "function": "Run #2", "x": 315, "y": 825, "w": 80, "h": 70}];
+const breakers=[{"id": "CB1", "function": "Driver power seat", "x": 60, "y": 790, "w": 42, "h": 62}, {"id": "CB2", "function": "Not populated", "x": 520, "y": 790, "w": 42, "h": 62}, {"id": "CB3", "function": "Power windows", "x": 145, "y": 825, "w": 42, "h": 78}];
+const categories={"engine": "Engine", "drivetrain": "Drivetrain", "body": "Body/Modules", "lighting": "Lighting", "power": "Power/Outlets", "hvac": "HVAC", "safety": "Safety", "brakes": "Brakes", "audio": "Audio", "cooling": "Cooling", "comfort": "Comfort", "steering": "Steering", "starting": "Starting", "diagnostic": "Diagnostic", "empty": "Empty"};
+const colors={
+ engine:"#a65b5b", drivetrain:"#8b6fc7", body:"#3e7cb1", lighting:"#d4a72c",
+ power:"#bc6c9c", hvac:"#4ca6a8", safety:"#c54b64", brakes:"#b7652d",
+ audio:"#6c7a89", cooling:"#3f8f6b", comfort:"#6989c9", steering:"#7c8f3f",
+ starting:"#ad6a3d", diagnostic:"#477c89", empty:"#363d46"
+};
+const ns="http://www.w3.org/2000/svg";
+const fuseLayer=document.getElementById("fuses");
+const relayLayer=document.getElementById("relays");
+const breakerLayer=document.getElementById("breakers");
+
+function makeText(group, x, y, text, size=11){
+  const t=document.createElementNS(ns,"text");
+  t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-size",size);
+  t.textContent=text; group.appendChild(t);
+}
+for(const f of fuses){
+  const g=document.createElementNS(ns,"g"); g.classList.add("fuse"); g.dataset.id=f.id;
+  const r=document.createElementNS(ns,"rect");
+  r.setAttribute("x",f.x);r.setAttribute("y",f.y);r.setAttribute("width",f.w);r.setAttribute("height",f.h);
+  r.setAttribute("rx",Math.min(6,f.h/4));r.setAttribute("fill",colors[f.category]||"#555");
+  r.setAttribute("stroke",f.critical?"#ffd2c7":"#91a0b2");
+  g.appendChild(r);
+  makeText(g,f.x+f.w/2,f.y+f.h/2+4,f.id,Math.max(8,Math.min(12,f.w/3.5)));
+  g.addEventListener("click",()=>showDetails(f));
+  fuseLayer.appendChild(g);
+}
+for(const o of relays){
+  const g=document.createElementNS(ns,"g"); g.classList.add("relay");
+  const r=document.createElementNS(ns,"rect"); Object.entries({x:o.x,y:o.y,width:o.w,height:o.h,rx:8}).forEach(([k,v])=>r.setAttribute(k,v));
+  g.appendChild(r); makeText(g,o.x+o.w/2,o.y+o.h/2+4,o.id,14); relayLayer.appendChild(g);
+}
+for(const o of breakers){
+  const g=document.createElementNS(ns,"g"); g.classList.add("breaker");
+  const r=document.createElementNS(ns,"rect"); Object.entries({x:o.x,y:o.y,width:o.w,height:o.h,rx:8}).forEach(([k,v])=>r.setAttribute(k,v));
+  g.appendChild(r); makeText(g,o.x+o.w/2,o.y+o.h/2+4,o.id,12); breakerLayer.appendChild(g);
+}
+
+const detail=document.getElementById("details");
+function showDetails(f){
+  document.querySelectorAll(".fuse").forEach(x=>x.classList.toggle("highlight",x.dataset.id===f.id));
+  document.getElementById("detailId").textContent=f.id;
+  document.getElementById("detailMeta").textContent=[f.amps||"Amperage not listed",categories[f.category]||f.category].join(" · ");
+  document.getElementById("detailFunction").textContent=f.function;
+  document.getElementById("detailBadges").innerHTML=
+    (f.critical?'<span class="badge warn">Critical circuit</span>':'<span class="badge">Accessory/noncritical</span>')+
+    '<span class="badge">Ignition off before removal</span>';
+  detail.classList.add("open");
+}
+document.getElementById("close").onclick=()=>detail.classList.remove("open");
+
+const legend=document.getElementById("legend");
+legend.innerHTML=Object.entries(categories).filter(([k])=>k!=="empty").map(([k,v])=>
+  `<div class="legend-row"><span class="swatch" style="background:${colors[k]}"></span>${v}</div>`
+).join("")+'<div class="legend-row"><span class="swatch" style="background:#363d46"></span>Not populated</div>';
+document.getElementById("legendBtn").onclick=()=>legend.classList.toggle("open");
+
+const search=document.getElementById("search");
+search.addEventListener("input",()=>{
+  const q=search.value.trim().toLowerCase();
+  for(const el of document.querySelectorAll(".fuse")){
+    const f=fuses.find(x=>x.id===el.dataset.id);
+    const match=!q || (`${f.id} ${f.amps} ${f.function} ${categories[f.category]||""}`).toLowerCase().includes(q);
+    el.classList.toggle("dim",!match);
+  }
+  if(q){
+    const hits=fuses.filter(f=>(`${f.id} ${f.amps} ${f.function}`).toLowerCase().includes(q));
+    if(hits.length===1) showDetails(hits[0]);
+  }
+});
+
+// touch/mouse pan and zoom
+const viewport=document.getElementById("viewport"), stage=document.getElementById("stage");
+let scale=.72, tx=-325*.72, ty=-475*.72, pointers=new Map(), lastDist=0, lastMid=null;
+function fit(){
+  const vw=viewport.clientWidth, vh=viewport.clientHeight;
+  scale=Math.min(vw/680,vh/980)*.95;
+  tx=-325*scale; ty=-475*scale;
+  render();
+}
+function render(){
+  stage.style.transform=`translate(${viewport.clientWidth/2+tx}px,${viewport.clientHeight/2+ty}px) scale(${scale})`;
+}
+viewport.addEventListener("pointerdown",e=>{viewport.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});});
+viewport.addEventListener("pointermove",e=>{
+  if(!pointers.has(e.pointerId))return;
+  const prev=pointers.get(e.pointerId); pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const pts=[...pointers.values()];
+  if(pts.length===1){tx+=e.clientX-prev.x;ty+=e.clientY-prev.y;}
+  else if(pts.length===2){
+    const [a,b]=pts, dist=Math.hypot(a.x-b.x,a.y-b.y), mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+    if(lastDist){const ratio=dist/lastDist; scale=Math.max(.25,Math.min(4,scale*ratio));}
+    if(lastMid){tx+=mid.x-lastMid.x;ty+=mid.y-lastMid.y;}
+    lastDist=dist;lastMid=mid;
+  }
+  render();
+});
+function end(e){pointers.delete(e.pointerId); if(pointers.size<2){lastDist=0;lastMid=null;}}
+viewport.addEventListener("pointerup",end);viewport.addEventListener("pointercancel",end);
+viewport.addEventListener("wheel",e=>{e.preventDefault();scale=Math.max(.25,Math.min(4,scale*(e.deltaY<0?1.12:.89)));render();},{passive:false});
+document.getElementById("reset").onclick=()=>{search.value="";document.querySelectorAll(".fuse").forEach(x=>x.classList.remove("dim","highlight"));detail.classList.remove("open");fit();};
+window.addEventListener("resize",fit); fit();
+</script>
+</body>
+</html>
